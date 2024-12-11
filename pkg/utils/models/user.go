@@ -1,11 +1,15 @@
 package models
 
+import "time"
+
 type UserDetails struct {
-	Name            string `json:"name"`
-	Email           string `json:"email" validate:"email"`
-	Phone           string `json:"phone"`
-	Password        string `json:"password"`
-	ConfirmPassword string `json:"confirmpassword"`
+	Name            string    `json:"name"`
+	Email           string    `json:"email" validate:"email"`
+	Phone           string    `json:"phone"`
+	Password        string    `json:"password"`
+	ConfirmPassword string    `json:"confirmpassword"`
+	BirthDate       time.Time `json:"birth_date"`
+	Address         string    `json:"address"`
 }
 
 type Address struct {

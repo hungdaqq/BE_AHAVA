@@ -34,7 +34,7 @@ func (c *userDatabase) CheckUserAvailability(email string) bool {
 func (c *userDatabase) UserSignUp(user models.UserDetails, referral string) (models.UserDetailsResponse, error) {
 
 	var userDetails models.UserDetailsResponse
-	err := c.DB.Raw("INSERT INTO users (name, email, password, phone,referral_code) VALUES (?, ?, ?, ?,?) RETURNING id, name, email, phone", user.Name, user.Email, user.Password, user.Phone, referral).Scan(&userDetails).Error
+	err := c.DB.Raw("INSERT INTO users (name, email, password, phone,referral_code, birth_date, address) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, name, email, phone", user.Name, user.Email, user.Password, user.Phone, referral, user.BirthDate, user.Address).Scan(&userDetails).Error
 
 	if err != nil {
 		return models.UserDetailsResponse{}, err
