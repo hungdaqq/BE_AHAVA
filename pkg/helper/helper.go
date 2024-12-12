@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/golang-jwt/jwt"
@@ -82,13 +82,18 @@ func (helper *helper) GenerateTokenAdmin(admin models.AdminDetailsResponse) (str
 
 func (h *helper) AddImageToS3(file *multipart.FileHeader) (string, error) {
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-south-1"))
-	if err != nil {
-		fmt.Println("configuration error:", err)
-		return "", err
-	}
+	// cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-south-1"))
+	// if err != nil {
+	// 	fmt.Println("configuration error:", err)
+	// 	return "", err
+	// }
 
-	client := s3.NewFromConfig(cfg)
+	// client := s3.NewFromConfig(cfg)
+
+	client := s3.NewFromConfig(aws.Config{Region: "us-east-1"}, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(h.cfg.AWS_HOST)
+		o.Credentials = credentials.NewStaticCredentialsProvider(h.cfg.AWS_ACCESS_KEY_ID, h.cfg.AWS_SECRET_ACCESS_KEY, "")
+	})
 
 	uploader := manager.NewUploader(client)
 
