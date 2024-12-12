@@ -19,23 +19,15 @@ func NewCategoryRepository(DB *gorm.DB) interfaces.CategoryRepository {
 }
 
 func (p *categoryRepository) AddCategory(c domain.Category) (domain.Category, error) {
-
-	var b string
-	err := p.DB.Raw("INSERT INTO categories (category) VALUES (?) RETURNING category", c.Category).Scan(&b).Error
+	var b int
+	err := p.DB.Raw(`INSERT INTO categories (category, description) 
+					VALUES (?, ?) RETURNING id`, c.Category, c.Description).Scan(&b).Error
 	if err != nil {
 		return domain.Category{}, err
 	}
 
 	var categoryResponse domain.Category
-	err = p.DB.Raw(`
-	SELECT
-		p.id,
-		p.category
-		FROM
-			categories p
-		WHERE
-			p.category = ?
-			`, b).Scan(&categoryResponse).Error
+	err = p.DB.Raw(`SELECT * FROM categories p WHERE p.id = ?`, b).Scan(&categoryResponse).Error
 
 	if err != nil {
 		return domain.Category{}, err
