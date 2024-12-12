@@ -66,7 +66,7 @@ func CheckAndCreateAdmin(db *gorm.DB) {
 	var count int64
 	db.Model(&domain.Admin{}).Count(&count)
 	if count == 0 {
-		password := "comebuyjersey"
+		password := "Admin@123qaz"
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			return
@@ -74,8 +74,8 @@ func CheckAndCreateAdmin(db *gorm.DB) {
 
 		admin := domain.Admin{
 			ID:       1,
-			Name:     "ahava",
-			Username: "ahava@gmail.com",
+			Name:     "AHAVA Admin",
+			Email:    "admin@ahava.com.vn",
 			Password: string(hashedPassword),
 		}
 		db.Create(&admin)

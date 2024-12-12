@@ -169,7 +169,7 @@ func (h *helper) GenerateTokenClients(user models.UserDetailsResponse) (string, 
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte("comebuyjersey"))
+	tokenString, err := token.SignedString([]byte("ahava"))
 
 	if err != nil {
 		return "", err
