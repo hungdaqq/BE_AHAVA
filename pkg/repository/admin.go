@@ -25,7 +25,7 @@ func NewAdminRepository(DB *gorm.DB) interfaces.AdminRepository {
 func (ad *adminRepository) LoginHandler(adminDetails models.AdminLogin) (domain.Admin, error) {
 
 	var adminCompareDetails domain.Admin
-	if err := ad.DB.Raw("select * from admins where username = ? ", adminDetails.Email).Scan(&adminCompareDetails).Error; err != nil {
+	if err := ad.DB.Raw("select * from admins where email = ? ", adminDetails.Email).Scan(&adminCompareDetails).Error; err != nil {
 		return domain.Admin{}, err
 	}
 
