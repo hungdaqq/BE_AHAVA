@@ -16,7 +16,7 @@ func AdminRoutes(engine *gin.RouterGroup,
 	couponHandler *handler.CouponHandler,
 	offerHandler *handler.OfferHandler) {
 
-	engine.POST("/adminlogin", adminHandler.LoginHandler)
+	engine.POST("/login", adminHandler.LoginHandler)
 	// api := router.Group("/admin_panel", middleware.AuthorizationMiddleware)
 	// api.GET("users", adminHandler.GetUsers)
 
