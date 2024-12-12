@@ -47,7 +47,7 @@ func NewServerHTTP(userHandler *handler.UserHandler,
 }
 
 func (sh *ServerHTTP) Start() {
-	err := sh.engine.Run(":8000")
+	err := sh.engine.Run(":8088")
 	if err != nil {
 		log.Fatal("gin engine couldn't start")
 	}
