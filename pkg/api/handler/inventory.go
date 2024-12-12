@@ -98,7 +98,16 @@ func (i *InventoryHandler) AddInventory(c *gin.Context) {
 // @Router			/admin/inventories [put]
 func (i *InventoryHandler) UpdateInventory(c *gin.Context) {
 
+	id := c.Param("id")
+	inventory_id, err := strconv.Atoi(id)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "parameter problem", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
 	var p models.InventoryUpdate
+	p.ID = inventory_id
 
 	if err := c.BindJSON(&p); err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "fields provided are in wrong format", nil, err.Error())
@@ -106,7 +115,7 @@ func (i *InventoryHandler) UpdateInventory(c *gin.Context) {
 		return
 	}
 
-	a, err := i.InventoryUseCase.UpdateInventory(p.Productid, p.Stock)
+	a, err := i.InventoryUseCase.UpdateInventory(p.ID, p.Stock)
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "could not update the inventory stock", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)

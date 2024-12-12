@@ -1,13 +1,14 @@
 package models
 
 type InventoryResponse struct {
-	ProductID int
-	Stock     int
+	ID          int
+	ProductName string
+	Stock       int
 }
 
 type InventoryUpdate struct {
-	Productid int `json:"product_id"`
-	Stock     int `json:"stock"`
+	ID    int `json:"id"`
+	Stock int `json:"stock"`
 }
 
 type AddToCart struct {

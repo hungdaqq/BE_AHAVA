@@ -20,16 +20,18 @@ func NewInventoryRepository(DB *gorm.DB) *inventoryRepository {
 
 func (i *inventoryRepository) AddInventory(inventory models.AddInventories, url string) (models.InventoryResponse, error) {
 
-	query := `
-    INSERT INTO inventories (category_id, product_name, size, stock, price, image)
-    VALUES (?, ?, ?, ?, ?, ?);
-    `
-	err := i.DB.Exec(query, inventory.CategoryID, inventory.ProductName, inventory.Size, inventory.Stock, inventory.Price, url).Error
+	var inventoryResponse models.InventoryResponse
+
+	err := i.DB.Raw(`
+		INSERT INTO inventories (category_id, product_name, size, stock, price, image)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id, product_name, stock`,
+		inventory.CategoryID, inventory.ProductName, inventory.Size, inventory.Stock, inventory.Price, url).
+		Scan(&inventoryResponse).Error
+
 	if err != nil {
 		return models.InventoryResponse{}, err
 	}
-
-	var inventoryResponse models.InventoryResponse
 
 	return inventoryResponse, nil
 
@@ -57,7 +59,7 @@ func (i *inventoryRepository) UpdateInventory(pid int, stock int) (models.Invent
 	}
 
 	// Update the
-	if err := i.DB.Exec("UPDATE inventories SET stock = stock + $1 WHERE id= $2", stock, pid).Error; err != nil {
+	if err := i.DB.Exec("UPDATE inventories SET stock = $1 WHERE id= $2", stock, pid).Error; err != nil {
 		return models.InventoryResponse{}, err
 	}
 
@@ -67,7 +69,7 @@ func (i *inventoryRepository) UpdateInventory(pid int, stock int) (models.Invent
 	if err := i.DB.Raw("SELECT stock FROM inventories WHERE id=?", pid).Scan(&newstock).Error; err != nil {
 		return models.InventoryResponse{}, err
 	}
-	newdetails.ProductID = pid
+	newdetails.ID = pid
 	newdetails.Stock = newstock
 
 	return newdetails, nil
