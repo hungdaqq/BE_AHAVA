@@ -39,7 +39,7 @@ type UserDetailsResponse struct {
 
 type UserLogin struct {
 	Email    string `json:"email" validate:"email"`
-	Password string `json:"password"`
+	Password string `json:"password" validate:"required"`
 }
 
 type UserSignInResponse struct {
@@ -65,7 +65,7 @@ type AddAddress struct {
 	Street    string `json:"street" validate:"required"`
 	City      string `json:"city" validate:"required"`
 	State     string `json:"state" validate:"required"`
-	Phone     string `json:"phone" validate:"require"`
+	Phone     string `json:"phone" validate:"required"`
 	Pin       string `json:"pin" validate:"required"`
 }
 

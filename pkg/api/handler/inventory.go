@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type InventoryHandler struct {
@@ -37,7 +38,7 @@ func NewInventoryHandler(usecase services.InventoryUseCase) *InventoryHandler {
 // @Router			/admin/inventories [post]
 func (i *InventoryHandler) AddInventory(c *gin.Context) {
 
-	var inventory models.AddInventories
+	var inventory models.AddInventory
 	categoryID, err := strconv.Atoi(c.Request.FormValue("category_id"))
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "form file error", nil, err.Error())
@@ -86,47 +87,6 @@ func (i *InventoryHandler) AddInventory(c *gin.Context) {
 
 }
 
-// @Summary		Update Stock
-// @Description	Admin can update stock of the inventories
-// @Tags			Admin
-// @Accept			json
-// @Produce		    json
-// @Param			add-stock	body	models.InventoryUpdate	true	"update stock"
-// @Security		Bearer
-// @Success		200	{object}	response.Response{}
-// @Failure		500	{object}	response.Response{}
-// @Router			/admin/inventories [put]
-func (i *InventoryHandler) UpdateInventory(c *gin.Context) {
-
-	id := c.Param("id")
-	inventory_id, err := strconv.Atoi(id)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "parameter problem", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-
-	var p models.InventoryUpdate
-	p.ID = inventory_id
-
-	if err := c.BindJSON(&p); err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "fields provided are in wrong format", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-
-	a, err := i.InventoryUseCase.UpdateInventory(p.ID, p.Stock)
-	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "could not update the inventory stock", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-
-	successRes := response.ClientResponse(http.StatusOK, "Successfully updated the inventory stock", a, nil)
-	c.JSON(http.StatusOK, successRes)
-
-}
-
 // @Summary		Delete Inventory
 // @Description	Admin can delete a product
 // @Tags			Admin
@@ -139,7 +99,7 @@ func (i *InventoryHandler) UpdateInventory(c *gin.Context) {
 // @Router			/admin/inventories [delete]
 func (i *InventoryHandler) DeleteInventory(c *gin.Context) {
 
-	inventoryID := c.Query("id")
+	inventoryID := c.Param("id")
 	err := i.InventoryUseCase.DeleteInventory(inventoryID)
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "fields provided are in wrong format", nil, err.Error())
@@ -248,7 +208,7 @@ func (i *InventoryHandler) SearchProducts(c *gin.Context) {
 
 func (i *InventoryHandler) UpdateProductImage(c *gin.Context) {
 
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "parameter problem", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
@@ -274,16 +234,16 @@ func (i *InventoryHandler) UpdateProductImage(c *gin.Context) {
 
 }
 
-func (i *InventoryHandler) EditInventoryDetails(c *gin.Context) {
+func (i *InventoryHandler) UpdateInventory(c *gin.Context) {
 
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "parameter problem", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
 	}
 
-	var model models.EditInventoryDetails
+	var model models.UpdateInventory
 
 	err = c.BindJSON(&model)
 	if err != nil {
@@ -292,14 +252,21 @@ func (i *InventoryHandler) EditInventoryDetails(c *gin.Context) {
 		return
 	}
 
-	err = i.InventoryUseCase.EditInventoryDetails(id, model)
+	err = validator.New().Struct(model)
 	if err != nil {
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not edit the details", nil, err.Error())
+		errRes := response.ClientResponse(http.StatusBadRequest, "constraints not satisfied", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errRes)
+		return
+	}
+
+	err = i.InventoryUseCase.UpdateInventory(id, model)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not update inventory", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
 	}
 
-	successRes := response.ClientResponse(http.StatusOK, "Successfully edited details", nil, nil)
+	successRes := response.ClientResponse(http.StatusOK, "Successfully updated inventory", nil, nil)
 	c.JSON(http.StatusOK, successRes)
 
 }

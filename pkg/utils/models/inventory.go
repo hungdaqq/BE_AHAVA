@@ -6,11 +6,6 @@ type InventoryResponse struct {
 	Stock       int
 }
 
-type InventoryUpdate struct {
-	ID    int `json:"id"`
-	Stock int `json:"stock"`
-}
-
 type AddToCart struct {
 	UserID      int `json:"user_id"`
 	InventoryID int `json:"inventory_id"`
@@ -29,7 +24,7 @@ type Inventories struct {
 	DiscountedPrice     float64 `json:"discounted_price"`
 }
 
-type AddInventories struct {
+type AddInventory struct {
 	ID          uint    `json:"id"`
 	CategoryID  int     `json:"category_id"`
 	ProductName string  `json:"product_name"`
@@ -38,10 +33,12 @@ type AddInventories struct {
 	Price       float64 `json:"price"`
 }
 
-type EditInventoryDetails struct {
-	Name       string  `json:"name"`
-	Price      float64 `json:"price"`
-	CategoryID int     `json:"category_id"`
+type UpdateInventory struct {
+	ID         int     `json:"id"`
+	Name       string  `json:"name" validate:"required"`
+	Price      float64 `json:"price" validate:"required"`
+	Stock      int     `json:"stock" validate:"required"`
+	CategoryID int     `json:"category_id" validate:"required"`
 	Size       string  `json:"size"`
 }
 

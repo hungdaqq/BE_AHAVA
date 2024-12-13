@@ -5,7 +5,6 @@ import (
 	interfaces "ahava/pkg/repository/interface"
 	"ahava/pkg/utils/models"
 	"errors"
-	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -20,8 +19,8 @@ func NewCategoryRepository(DB *gorm.DB) interfaces.CategoryRepository {
 
 func (p *categoryRepository) AddCategory(c domain.Category) (domain.Category, error) {
 	var b int
-	err := p.DB.Raw(`INSERT INTO categories (category, description) 
-					VALUES (?, ?) RETURNING id`, c.Category, c.Description).Scan(&b).Error
+	err := p.DB.Raw(`INSERT INTO categories (category, description) VALUES (?, ?) RETURNING id`,
+		c.Category, c.Description).Scan(&b).Error
 	if err != nil {
 		return domain.Category{}, err
 	}
@@ -51,34 +50,21 @@ func (p *categoryRepository) CheckCategory(current string) (bool, error) {
 	return true, err
 }
 
-func (p *categoryRepository) UpdateCategory(current, new string) (domain.Category, error) {
-
-	// Check the database connection
-	if p.DB == nil {
-		return domain.Category{}, errors.New("database connection is nil")
-	}
+func (p *categoryRepository) UpdateCategory(categoryID int, category, description string) (domain.Category, error) {
+	var updateCategory domain.Category
 
 	// Update the category
-	if err := p.DB.Exec("UPDATE categories SET category = $1 WHERE category = $2", new, current).Error; err != nil {
+	if err := p.DB.Raw("UPDATE categories SET category = $1, description = $2 WHERE id = $3 RETURNING *",
+		category, description, categoryID).Scan(&updateCategory).Error; err != nil {
 		return domain.Category{}, err
 	}
 
-	// Retrieve the updated category
-	var newcat domain.Category
-	if err := p.DB.First(&newcat, "category = ?", new).Error; err != nil {
-		return domain.Category{}, err
-	}
-
-	return newcat, nil
+	return updateCategory, nil
 }
 
-func (c *categoryRepository) DeleteCategory(categoryID string) error {
-	id, err := strconv.Atoi(categoryID)
-	if err != nil {
-		return errors.New("converting into integer not happened")
-	}
+func (c *categoryRepository) DeleteCategory(categoryID int) error {
 
-	result := c.DB.Exec("DELETE FROM categories WHERE id = ?", id)
+	result := c.DB.Exec("DELETE FROM categories WHERE id = ?", categoryID)
 
 	if result.RowsAffected < 1 {
 		return errors.New("no records with that ID exist")

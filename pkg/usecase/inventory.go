@@ -25,7 +25,7 @@ func NewInventoryUseCase(repo interfaces.InventoryRepository, offer interfaces.O
 	}
 }
 
-func (i *inventoryUseCase) AddInventory(inventory models.AddInventories, image *multipart.FileHeader) (models.InventoryResponse, error) {
+func (i *inventoryUseCase) AddInventory(inventory models.AddInventory, image *multipart.FileHeader) (models.InventoryResponse, error) {
 
 	url, err := i.helper.AddImageToS3(image)
 	if err != nil {
@@ -42,25 +42,25 @@ func (i *inventoryUseCase) AddInventory(inventory models.AddInventories, image *
 
 }
 
-func (i *inventoryUseCase) UpdateInventory(pid int, stock int) (models.InventoryResponse, error) {
+// func (i *inventoryUseCase) UpdateInventory(pid int, stock int) (models.InventoryResponse, error) {
 
-	result, err := i.repository.CheckInventory(pid)
-	if err != nil {
+// 	result, err := i.repository.CheckInventory(pid)
+// 	if err != nil {
 
-		return models.InventoryResponse{}, err
-	}
+// 		return models.InventoryResponse{}, err
+// 	}
 
-	if !result {
-		return models.InventoryResponse{}, errors.New("there is no inventory as you mentioned")
-	}
+// 	if !result {
+// 		return models.InventoryResponse{}, errors.New("there is no inventory as you mentioned")
+// 	}
 
-	newcat, err := i.repository.UpdateInventory(pid, stock)
-	if err != nil {
-		return models.InventoryResponse{}, err
-	}
+// 	newcat, err := i.repository.UpdateInventory(pid, stock)
+// 	if err != nil {
+// 		return models.InventoryResponse{}, err
+// 	}
 
-	return newcat, err
-}
+// 	return newcat, err
+// }
 
 func (i *inventoryUseCase) DeleteInventory(inventoryID string) error {
 
@@ -208,10 +208,10 @@ func (i *inventoryUseCase) UpdateProductImage(id int, file *multipart.FileHeader
 
 }
 
-func (i *inventoryUseCase) EditInventoryDetails(id int, model models.EditInventoryDetails) error {
+func (i *inventoryUseCase) UpdateInventory(id int, model models.UpdateInventory) error {
 
 	//send the url and save it in database
-	err := i.repository.EditInventoryDetails(id, model)
+	err := i.repository.UpdateInventory(id, model)
 	if err != nil {
 		return err
 	}

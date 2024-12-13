@@ -25,28 +25,19 @@ func NewCategoryUseCase(repo interfaces.CategoryRepository, inv interfaces.Inven
 
 func (Cat *categoryUseCase) AddCategory(category domain.Category) (domain.Category, error) {
 
-	productResponse, err := Cat.repository.AddCategory(category)
+	result, err := Cat.repository.AddCategory(category)
 
 	if err != nil {
 		return domain.Category{}, err
 	}
 
-	return productResponse, nil
+	return result, nil
 
 }
 
-func (Cat *categoryUseCase) UpdateCategory(current string, new string) (domain.Category, error) {
+func (Cat *categoryUseCase) UpdateCategory(categoryID int, category, description string) (domain.Category, error) {
 
-	result, err := Cat.repository.CheckCategory(current)
-	if err != nil {
-		return domain.Category{}, err
-	}
-
-	if !result {
-		return domain.Category{}, errors.New("there is no category as you mentioned")
-	}
-
-	newcat, err := Cat.repository.UpdateCategory(current, new)
+	newcat, err := Cat.repository.UpdateCategory(categoryID, category, description)
 	if err != nil {
 		return domain.Category{}, err
 	}
@@ -54,7 +45,7 @@ func (Cat *categoryUseCase) UpdateCategory(current string, new string) (domain.C
 	return newcat, err
 }
 
-func (Cat *categoryUseCase) DeleteCategory(categoryID string) error {
+func (Cat *categoryUseCase) DeleteCategory(categoryID int) error {
 
 	err := Cat.repository.DeleteCategory(categoryID)
 	if err != nil {

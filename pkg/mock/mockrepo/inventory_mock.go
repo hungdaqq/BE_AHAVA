@@ -35,7 +35,7 @@ func (m *MockInventoryRepository) EXPECT() *MockInventoryRepositoryMockRecorder 
 }
 
 // AddInventory mocks base method.
-func (m *MockInventoryRepository) AddInventory(inventory models.AddInventories, url string) (models.InventoryResponse, error) {
+func (m *MockInventoryRepository) AddInventory(inventory models.AddInventory, url string) (models.InventoryResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddInventory", inventory, url)
 	ret0, _ := ret[0].(models.InventoryResponse)
@@ -108,18 +108,18 @@ func (mr *MockInventoryRepositoryMockRecorder) DeleteInventory(id interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteInventory", reflect.TypeOf((*MockInventoryRepository)(nil).DeleteInventory), id)
 }
 
-// EditInventoryDetails mocks base method.
-func (m *MockInventoryRepository) EditInventoryDetails(id int, model models.EditInventoryDetails) error {
+// UpdateInventory mocks base method.
+func (m *MockInventoryRepository) UpdateInventory(id int, model models.UpdateInventory) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "EditInventoryDetails", id, model)
+	ret := m.ctrl.Call(m, "UpdateInventory", id, model)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// EditInventoryDetails indicates an expected call of EditInventoryDetails.
-func (mr *MockInventoryRepositoryMockRecorder) EditInventoryDetails(id, model interface{}) *gomock.Call {
+// UpdateInventory indicates an expected call of UpdateInventory.
+func (mr *MockInventoryRepositoryMockRecorder) UpdateInventory(id, model interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EditInventoryDetails", reflect.TypeOf((*MockInventoryRepository)(nil).EditInventoryDetails), id, model)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInventory", reflect.TypeOf((*MockInventoryRepository)(nil).UpdateInventory), id, model)
 }
 
 // ListProducts mocks base method.
@@ -183,19 +183,19 @@ func (mr *MockInventoryRepositoryMockRecorder) ShowIndividualProducts(id interfa
 }
 
 // UpdateInventory mocks base method.
-func (m *MockInventoryRepository) UpdateInventory(pid, stock int) (models.InventoryResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateInventory", pid, stock)
-	ret0, _ := ret[0].(models.InventoryResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
+// func (m *MockInventoryRepository) UpdateInventory(pid int , model models.UpdateInventory) (models.InventoryResponse, error) {
+// 	m.ctrl.T.Helper()
+// 	ret := m.ctrl.Call(m, "UpdateInventory", pid, model)
+// 	ret0, _ := ret[0].(models.InventoryResponse)
+// 	ret1, _ := ret[1].(error)
+// 	return ret0, ret1
+// }
 
 // UpdateInventory indicates an expected call of UpdateInventory.
-func (mr *MockInventoryRepositoryMockRecorder) UpdateInventory(pid, stock interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInventory", reflect.TypeOf((*MockInventoryRepository)(nil).UpdateInventory), pid, stock)
-}
+// func (mr *MockInventoryRepositoryMockRecorder) UpdateInventory(pid, stock interface{}) *gomock.Call {
+// 	mr.mock.ctrl.T.Helper()
+// 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInventory", reflect.TypeOf((*MockInventoryRepository)(nil).UpdateInventory), pid, stock)
+// }
 
 // UpdateProductImage mocks base method.
 func (m *MockInventoryRepository) UpdateProductImage(arg0 int, arg1 string) error {

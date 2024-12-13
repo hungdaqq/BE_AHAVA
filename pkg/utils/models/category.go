@@ -8,7 +8,7 @@ type ProductsReceiver struct {
 	Price       float64 `json:"price"`
 }
 
-type ProductResponse struct {
+type CategoryResponse struct {
 	ID          uint    `json:"id" gorm:"unique;not null"`
 	Category    string  `json:"Category"`
 	ProductName string  `json:"product_name"`
@@ -17,9 +17,9 @@ type ProductResponse struct {
 	Price       float64 `json:"price"`
 }
 
-type SetNewName struct {
-	Current string `json:"current"`
-	New     string `json:"new"`
+type UpdateCategory struct {
+	Category    string `json:"category"`
+	Description string `json:"description"`
 }
 
 type MakeOrder struct {

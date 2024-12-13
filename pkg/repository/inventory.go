@@ -18,7 +18,7 @@ func NewInventoryRepository(DB *gorm.DB) *inventoryRepository {
 	}
 }
 
-func (i *inventoryRepository) AddInventory(inventory models.AddInventories, url string) (models.InventoryResponse, error) {
+func (i *inventoryRepository) AddInventory(inventory models.AddInventory, url string) (models.InventoryResponse, error) {
 
 	var inventoryResponse models.InventoryResponse
 
@@ -39,7 +39,8 @@ func (i *inventoryRepository) AddInventory(inventory models.AddInventories, url 
 
 func (i *inventoryRepository) CheckInventory(pid int) (bool, error) {
 	var k int
-	err := i.DB.Raw("SELECT COUNT(*) FROM inventories WHERE id=?", pid).Scan(&k).Error
+	err := i.DB.Raw("SELECT COUNT(*) FROM inventories WHERE id=?",
+		pid).Scan(&k).Error
 	if err != nil {
 		return false, err
 	}
@@ -51,37 +52,37 @@ func (i *inventoryRepository) CheckInventory(pid int) (bool, error) {
 	return true, err
 }
 
-func (i *inventoryRepository) UpdateInventory(pid int, stock int) (models.InventoryResponse, error) {
+// func (i *inventoryRepository) UpdateInventory(pid int, stock int) (models.InventoryResponse, error) {
 
-	// Check the database connection
-	if i.DB == nil {
-		return models.InventoryResponse{}, errors.New("database connection is nil")
-	}
+// 	// Check the database connection
+// 	if i.DB == nil {
+// 		return models.InventoryResponse{}, errors.New("database connection is nil")
+// 	}
 
-	// Update the
-	if err := i.DB.Exec("UPDATE inventories SET stock = $1 WHERE id= $2", stock, pid).Error; err != nil {
-		return models.InventoryResponse{}, err
-	}
+// 	// Update the
+// 	if err := i.DB.Exec("UPDATE inventories SET stock = $1 WHERE id= $2", stock, pid).Error; err != nil {
+// 		return models.InventoryResponse{}, err
+// 	}
 
-	// Retrieve the update
-	var newdetails models.InventoryResponse
-	var newstock int
-	if err := i.DB.Raw("SELECT stock FROM inventories WHERE id=?", pid).Scan(&newstock).Error; err != nil {
-		return models.InventoryResponse{}, err
-	}
-	newdetails.ID = pid
-	newdetails.Stock = newstock
+// 	// Retrieve the update
+// 	var newdetails models.InventoryResponse
+// 	var newstock int
+// 	if err := i.DB.Raw("SELECT stock FROM inventories WHERE id=?", pid).Scan(&newstock).Error; err != nil {
+// 		return models.InventoryResponse{}, err
+// 	}
+// 	newdetails.ID = pid
+// 	newdetails.Stock = newstock
 
-	return newdetails, nil
-}
+// 	return newdetails, nil
+// }
 
 func (i *inventoryRepository) DeleteInventory(inventoryID string) error {
-	id, err := strconv.Atoi(inventoryID)
-	if err != nil {
-		return errors.New("converting into integer not happened")
-	}
+	// id, err := strconv.Atoi(inventoryID)
+	// if err != nil {
+	// 	return errors.New("converting into integer not happened")
+	// }
 
-	result := i.DB.Exec("DELETE FROM inventories WHERE id = ?", id)
+	result := i.DB.Exec("DELETE FROM inventories WHERE id = ?", inventoryID)
 
 	if result.RowsAffected < 1 {
 		return errors.New("no records with that ID exist")
@@ -122,7 +123,8 @@ func (ad *inventoryRepository) ListProducts(page int) ([]models.Inventories, err
 	offset := (page - 1) * 10
 	var productDetails []models.Inventories
 
-	if err := ad.DB.Raw("select id,category_id,product_name,image,size,stock,price from inventories limit $1 offset $2", 10, offset).Scan(&productDetails).Error; err != nil {
+	if err := ad.DB.Raw("select id,category_id,product_name,image,size,stock,price from inventories limit $1 offset $2",
+		10, offset).Scan(&productDetails).Error; err != nil {
 		return []models.Inventories{}, err
 	}
 
@@ -134,7 +136,8 @@ func (ad *inventoryRepository) ListProductsByCategory(id int) ([]models.Inventor
 
 	var productDetails []models.Inventories
 
-	if err := ad.DB.Raw("select id,category_id,product_name,image,size,stock,price from inventories WHERE category_id = $1", id).Scan(&productDetails).Error; err != nil {
+	if err := ad.DB.Raw("select id,category_id,product_name,image,size,stock,price from inventories WHERE category_id = $1",
+		id).Scan(&productDetails).Error; err != nil {
 		return []models.Inventories{}, err
 	}
 
@@ -170,7 +173,7 @@ func (ad *inventoryRepository) SearchProducts(key string) ([]models.Inventories,
 	WHERE i.product_name ILIKE '%' || ? || '%'
 	OR
 	c.category ILIKE '%' || ? || '%'
-`
+	`
 	if err := ad.DB.Raw(query, key, key).Scan(&productDetails).Error; err != nil {
 		return []models.Inventories{}, err
 	}
@@ -188,12 +191,14 @@ func (i *inventoryRepository) UpdateProductImage(id int, url string) error {
 	return nil
 }
 
-func (i *inventoryRepository) EditInventoryDetails(id int, model models.EditInventoryDetails) error {
-
-	err := i.DB.Exec("UPDATE inventories SET product_name = $1, category_id = $2, price = $3, size = $4 WHERE id = $5", model.Name, model.CategoryID, model.Price, model.Size, id).Error
-	if err != nil {
-		return err
+func (i *inventoryRepository) UpdateInventory(id int, model models.UpdateInventory) error {
+	result := i.DB.Exec("UPDATE inventories SET product_name = $1, category_id = $2, price = $3, size = $4, stock = $5 WHERE id = $6",
+		model.Name, model.CategoryID, model.Price, model.Size, model.Stock, id)
+	if result.Error != nil {
+		return result.Error
 	}
-
+	if result.RowsAffected < 1 {
+		return errors.New("no records with that ID exist")
+	}
 	return nil
 }

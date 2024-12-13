@@ -6,8 +6,8 @@ import (
 )
 
 type InventoryUseCase interface {
-	AddInventory(inventory models.AddInventories, image *multipart.FileHeader) (models.InventoryResponse, error)
-	UpdateInventory(id int, Stock int) (models.InventoryResponse, error)
+	AddInventory(inventory models.AddInventory, image *multipart.FileHeader) (models.InventoryResponse, error)
+	UpdateInventory(int, models.UpdateInventory) error
 	DeleteInventory(id string) error
 
 	ShowIndividualProducts(sku string) (models.Inventories, error)
@@ -15,7 +15,5 @@ type InventoryUseCase interface {
 	ListProductsForAdmin(page int) ([]models.Inventories, error)
 
 	SearchProducts(key string) ([]models.Inventories, error)
-
 	UpdateProductImage(id int, file *multipart.FileHeader) error
-	EditInventoryDetails(int, models.EditInventoryDetails) error
 }
